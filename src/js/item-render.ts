@@ -3,8 +3,9 @@ import { customElement, property, query } from 'lit/decorators.js'
 
 @customElement('item-render')
 export class ItemRender extends LitElement {
-    @property({ type: String }) buttonLabelDelete= 'Eliminar';
-    @property({ type: String }) buttonLabelEdit = 'Editar';
+    @property({ type: String }) buttonLabelDelete= 'Delete';
+    @property({ type: String }) buttonLabelEdit = 'Edit';
+    @property({ type: String }) innerText = 'Item Text';
     @property({ type: Boolean }) isChecked = false;
     @property({ type: String }) statusClass = ""
 
@@ -32,12 +33,12 @@ export class ItemRender extends LitElement {
     render() {
        
         return html`
-            <div class=item-list-wrapper>
-                <input id="status" type="checkbox" name="status" ${this.isChecked ? 'checked' : ''} @change=${this._onStatusChange}/>
-                <p class="title ${this.statusClass}">Título del todo</p>
-                <button id="btn-edit" @click=${this._editItem}>${this.buttonLabelEdit}</button>
-                <button id="btn-delete" @click=${this._deleteItem}>${this.buttonLabelDelete}</button>
-            </div>
+          
+            <input id="status" type="checkbox" name="status" ${this.isChecked ? 'checked' : ''} @change=${this._onStatusChange}/>
+            <p class="title ${this.statusClass}">${this.innerText}</p>
+            <button id="btn-edit" @click=${this._editItem}>${this.buttonLabelEdit}</button>
+            <button id="btn-delete" @click=${this._deleteItem}>${this.buttonLabelDelete}</button>
+
             `;
     }
 

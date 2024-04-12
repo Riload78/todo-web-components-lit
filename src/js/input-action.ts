@@ -40,7 +40,7 @@ export class InputAction extends LitElement {
         
         console.log(input.value);
         
-        this.dispatchEvent(new CustomEvent('eventName', { detail: input.value})); 
+        this.dispatchEvent(new CustomEvent('send-action', { detail: input.value})); 
         input.value =  "";
         
     }
