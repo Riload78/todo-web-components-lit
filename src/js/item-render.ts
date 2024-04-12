@@ -1,11 +1,13 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js'
+import { Nota } from './interfaces';
 
 @customElement('item-render')
 export class ItemRender extends LitElement {
     @property({ type: String }) buttonLabelDelete= 'Delete';
     @property({ type: String }) buttonLabelEdit = 'Edit';
     @property({ type: String }) innerText = 'Item Text';
+    @property({ type: String }) dataId = '0';
     @property({ type: Boolean }) isChecked = false;
     @property({ type: String }) statusClass = ""
 
@@ -36,14 +38,14 @@ export class ItemRender extends LitElement {
           
             <input id="status" type="checkbox" name="status" ${this.isChecked ? 'checked' : ''} @change=${this._onStatusChange}/>
             <p class="title ${this.statusClass}">${this.innerText}</p>
-            <button id="btn-edit" @click=${this._editItem}>${this.buttonLabelEdit}</button>
-            <button id="btn-delete" @click=${this._deleteItem}>${this.buttonLabelDelete}</button>
+            <button id="btn-edit" id="${this.dataId}" @click=${this._editItem}>${this.buttonLabelEdit}</button>
+            <button id="btn-delete" id="${this.dataId}" @click=${this._deleteItem}>${this.buttonLabelDelete}</button>
 
             `;
     }
 
     _deleteItem = () => {
-        console.log(this.btnDelete);
+        
         const data:string='prueba'
         this.dispatchEvent(new CustomEvent('delete-item', { detail: data}));
         this.remove()

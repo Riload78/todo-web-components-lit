@@ -1,7 +1,9 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js'
+import { Nota } from './interfaces.js';
 import './input-action.js'  
 import './item-render.js'
+
 /*
 NOMBRE --> list-manager
 
@@ -22,8 +24,11 @@ NOMBRE --> list-manager
 - Custom Properties
 
 */
+
+
 @customElement('list-manager')
 export class ListManager extends LitElement {
+    
     static styles = [
         css`
             :host {
@@ -48,20 +53,18 @@ export class ListManager extends LitElement {
     _addToDO =  (event: CustomEvent) => {
         console.log(event);
         const newTodo = event.detail;
-        const item = this._itemRender(newTodo)
-        console.log(item);
-        const objItem = {
-            id: Date.now(),
-            ...newTodo,
+        const objItem: Nota = {
+            id: String(Date.now()),
+            nota: newTodo,
             isCompleted: false
         }
+        const item = this._itemRender(objItem.id, objItem.nota)
+        console.log(item);
         this._safeItem(objItem)
-        
-       
     }
 
-    _itemRender = (newTodo: string) => {
-        const item = `<item-render buttonLabelDelete="Eliminar" buttonLabelEdit="Editar" innerText="${newTodo}"></item-render>`;
+    _itemRender = (id: string, text: string) => {
+        const item = `<item-render dataId="${id}" buttonLabelDelete="Eliminar" buttonLabelEdit="Editar" innerText="${text}"></item-render>`;
         const itemWrapper = document.createElement('div');
         itemWrapper.classList.add('item-wrapper');
         itemWrapper.innerHTML = item;
@@ -76,19 +79,18 @@ export class ListManager extends LitElement {
         
     }
 
-    _safeItem = (item: Array<object>) => {
+    _safeItem = (item: Nota) => {
         console.log(item);
-        const storage = this._loadLocalStorage()
+        const storage: Nota[] = this._loadLocalStorage()
         storage.push(item);
+        localStorage.setItem('listItems', JSON.stringify(storage))
     }
 
-    _loadLocalStorage = () : object => {
-        let listItemsFromLS : object
-        if(!localStorage.getItem('listItems')){
-            localStorage.setItem('listItems', "[]")
-        }else{ 
-            listItemsFromLS = JSON.parse(localStorage.getItem("listItems"))
-        }
-        return listItemsFromLS 
+    _loadLocalStorage = () : [] => {
+        const data = localStorage.getItem('listItems') ?? '[]';
+        
+        const listItemsLs: [] = JSON.parse(data)
+        
+        return listItemsLs
     }
 }
