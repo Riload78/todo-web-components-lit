@@ -50,11 +50,17 @@ export class ListManager extends LitElement {
         const newTodo = event.detail;
         const item = this._itemRender(newTodo)
         console.log(item);
+        const objItem = {
+            id: Date.now(),
+            ...newTodo,
+            isCompleted: false
+        }
+        this._safeItem(objItem)
         
        
     }
 
-    _itemRender = (newTodo) => {
+    _itemRender = (newTodo: string) => {
         const item = `<item-render buttonLabelDelete="Eliminar" buttonLabelEdit="Editar" innerText="${newTodo}"></item-render>`;
         const itemWrapper = document.createElement('div');
         itemWrapper.classList.add('item-wrapper');
@@ -68,5 +74,21 @@ export class ListManager extends LitElement {
         console.log('remove');
         console.log(event);
         
+    }
+
+    _safeItem = (item: Array<object>) => {
+        console.log(item);
+        const storage = this._loadLocalStorage()
+        storage.push(item);
+    }
+
+    _loadLocalStorage = () : object => {
+        let listItemsFromLS : object
+        if(!localStorage.getItem('listItems')){
+            localStorage.setItem('listItems', "[]")
+        }else{ 
+            listItemsFromLS = JSON.parse(localStorage.getItem("listItems"))
+        }
+        return listItemsFromLS 
     }
 }
