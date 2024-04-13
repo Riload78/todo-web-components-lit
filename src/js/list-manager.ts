@@ -38,7 +38,15 @@ export class ListManager extends LitElement {
     ];
     //add eventlistenet form input-action
 
-    @query('.list-wrapper') listWrapper: HTMLElement;
+    @query('.list-wrapper') listWrapper!: HTMLElement;
+    @query('.btn-delete') btnDelete: HTMLElement
+
+
+    connectedCallback() {
+        super.connectedCallback();
+        this._loadLocalStorage();
+    }
+
 
     render() {
         return html`
@@ -58,8 +66,7 @@ export class ListManager extends LitElement {
             nota: newTodo,
             isCompleted: false
         }
-        const item = this._itemRender(objItem.id, objItem.nota)
-        console.log(item);
+        this._itemRender(objItem.id, objItem.nota)
         this._safeItem(objItem)
     }
 
@@ -69,14 +76,18 @@ export class ListManager extends LitElement {
         itemWrapper.classList.add('item-wrapper');
         itemWrapper.innerHTML = item;
         itemWrapper.addEventListener('delete-item', this._removeItem);
+        itemWrapper.addEventListener('isCompleted', this._completeItem);
         this.listWrapper.appendChild(itemWrapper)
-        return itemWrapper
+        console.log('list-wrapper',this.listWrapper);
     }
 
     _removeItem = (event: CustomEvent) => {
         console.log('remove');
         console.log(event);
-        
+        const idDelete = event.detail.id;
+        const storage:Nota[] = this._loadLocalStorage()
+        const itemToDDelete = storage.filter(item => item.id !== idDelete);
+        localStorage.setItem("listItems", JSON.stringify(itemToDDelete));
     }
 
     _safeItem = (item: Nota) => {
@@ -86,11 +97,14 @@ export class ListManager extends LitElement {
         localStorage.setItem('listItems', JSON.stringify(storage))
     }
 
+    _completeItem = (event: CustomEvent) => {
+        console.log('completed:', event.detail);
+        
+    }
+
     _loadLocalStorage = () : [] => {
         const data = localStorage.getItem('listItems') ?? '[]';
-        
         const listItemsLs: [] = JSON.parse(data)
-        
         return listItemsLs
     }
 }

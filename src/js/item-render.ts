@@ -11,7 +11,8 @@ export class ItemRender extends LitElement {
     @property({ type: Boolean }) isChecked = false;
     @property({ type: String }) statusClass = ""
 
-    @query('#btn-delete') btnDelete: HTMLElement;
+    @query('.btn-delete') btnDelete: HTMLElement;
+    @query('.btn-edit') btnEdit: HTMLElement;
     @query('#status') inputStatus: HTMLElement;
     @query('.title') itemText: HTMLElement; 
     static styles = [
@@ -36,18 +37,23 @@ export class ItemRender extends LitElement {
        
         return html`
           
-            <input id="status" type="checkbox" name="status" ${this.isChecked ? 'checked' : ''} @change=${this._onStatusChange}/>
+            <input id="${this.dataId}" type="checkbox" name="status" ${this.isChecked ? 'checked' : ''} @change=${this._onStatusChange}/>
             <p class="title ${this.statusClass}">${this.innerText}</p>
-            <button id="btn-edit" id="${this.dataId}" @click=${this._editItem}>${this.buttonLabelEdit}</button>
-            <button id="btn-delete" id="${this.dataId}" @click=${this._deleteItem}>${this.buttonLabelDelete}</button>
+            <button id="${this.dataId}" class="btn-edit" @click=${this._editItem}>${this.buttonLabelEdit}</button>
+            <button id="${this.dataId}" class="btn-delete" @click="${this._deleteItem}">${this.buttonLabelDelete}</button>
 
             `;
     }
 
-    _deleteItem = () => {
-        
-        const data:string='prueba'
-        this.dispatchEvent(new CustomEvent('delete-item', { detail: data}));
+    _deleteItem = (event: Event) => {
+        event.preventDefault()
+        console.log('itemrender event', event.target);
+        const id = (event.target as HTMLElement).id;
+        this.dispatchEvent(new CustomEvent('delete-item', {
+            detail: { id },
+            bubbles: true,
+            composed: true
+        }));
         this.remove()
         
     }
@@ -55,10 +61,19 @@ export class ItemRender extends LitElement {
     _onStatusChange = (event: Event) => {
         console.log(event);
         console.log(this.isChecked);
+        const id = (event.target as HTMLElement).id;
         this.isChecked = event.target['checked'];
         this.isChecked ? this.statusClass = 'completed' : this.statusClass = '';
         console.log(this.isChecked);
-    
+        this.dispatchEvent(new CustomEvent('isCompleted', { 
+            detail: {
+                isComplete : this.isChecked,
+                id: id
+            },
+            bubbles: true,
+            composed: true
+        
+        }));
         
     }
 
